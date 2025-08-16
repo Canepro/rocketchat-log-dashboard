@@ -1,0 +1,37 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Rocket.Chat Log Dashboard</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+  <style>body{font-family:system-ui;margin:24px;}canvas{max-width:960px;}</style>
+</head>
+<body>
+  <h1>Rocket.Chat Log Dashboard</h1>
+  <canvas id="chart"></canvas>
+  <script>
+    async function load() {
+      const res = await fetch('/api/logs');
+      const data = await res.json();
+      const labels = data.map(p => new Date(p.t));
+      const values = data.map(p => p.value);
+      const ctx = document.getElementById('chart');
+      new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels,
+          datasets: [{ label: 'Events/min', data: values, borderColor: '#2563eb', fill: false }]
+        },
+        options: {
+          parsing: false,
+          scales: {
+            x: { type: 'time', time: { unit: 'minute' } },
+            y: { beginAtZero: true }
+          }
+        }
+      });
+    }
+    load();
+  </script>
+</body>
+</html>
